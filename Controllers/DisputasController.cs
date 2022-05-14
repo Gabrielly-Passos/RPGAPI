@@ -169,13 +169,19 @@ namespace RpgApi.Controllers
              {
                  //ATENÇÃO: todas as etapas a seguir dever ficar aqui dentro do while
               //Seleciona personagens com pontos vida positivos e depois faz sorteio.
+
+
              List<Personagem> atacantes = personagens.Where(p => p.PontosVida > 0).ToList();
              Personagem atacante = atacantes[new Random().Next(atacantes.Count)];
              d.AtacanteId = atacante.Id;
+
+
             //Seleciona personagens com pontos vida positivos, exceto o atacante escolhido e depois faz sorteio.
             List<Personagem> oponentes = personagens.Where(p => p.Id != atacante.Id && p.PontosVida > 0).ToList();
             Personagem oponente = oponentes[new Random().Next(oponentes.Count)];
             d.OponenteId = oponente.Id;
+
+
             //declara e redefine a cada passagem do while o valor das variáveis que serão usadas.
            int dano = 0;
            string ataqueUsado = string.Empty;
@@ -188,6 +194,7 @@ namespace RpgApi.Controllers
             {
                 //programação do ataque com arma
                //Sorteio da Força
+               
                 dano = atacante.Arma.Dano + (new Random().Next(atacante.Forca));
                 dano = dano - new Random().Next(oponente.Defesa); //Sorteio da defesa
                 ataqueUsado = atacante.Arma.Nome;
