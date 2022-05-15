@@ -303,9 +303,11 @@ namespace RpgApi.Controllers
               return BadRequest(ex.Message);
             }
         }
+  
+
     [HttpGet("Listar")]
 
-    
+
         public async Task<IActionResult> ListarAsync()
         {
             try
