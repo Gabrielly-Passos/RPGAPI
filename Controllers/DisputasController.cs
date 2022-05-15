@@ -221,8 +221,8 @@ namespace RpgApi.Controllers
 
                 //Realiza o sorteio entre as habilidade existentes e na linha seguinte a seleciona.
 
-                int sortelonabilidadeld = new Random().Next(atacante. PersonagemHabilidades.Count);
-                Habilidade habilidadeEscolhida = atacante.PersonagemHabilidades [sorteioHabilidadeId].Habilidade;
+                int sorteioHabilidadeld = new Random().Next(atacante. PersonagemHabilidades.Count);
+                Habilidade habilidadeEscolhida = atacante.PersonagemHabilidades [sorteioHabilidadeld].Habilidade;
                 ataqueUsado = habilidadeEscolhida.Nome;
 
 
@@ -244,9 +244,36 @@ namespace RpgApi.Controllers
 
 
                         }
-        //ATENÇÃO aqui ficará a programação da berificação do ataque usado e verificação se existen mais de um personagem vivo
+        //ATENÇÃO aqui ficará a programação da verificação do ataque usado e verificação se existen mais de um personagem vivo
+           if (!string.IsNullOrEmpty(ataqueUsado))
 
-             }
+                { //Incrementando os dados dos combates
+                    atacante.Vitorias++;
+                    oponente.Vitorias++;
+                    atacante.Disputas++;
+                    oponente.Disputas++;
+
+                    d.Id = 0;//Zera o Id para poder salvar os dados de disputa sem erro de chave.
+                    d.DataDisputa = DateTime.Now;
+                    _context.Disputas.Add(d);
+                    await _context.SaveChangesAsync();
+                }
+
+                qtdPersonagensVivos = personagens.FindAll(p => p.PontosVida > 0).Count;
+
+                if(qtdPersonagensVivos == 1)//Havendo só um personagem vivo, existe um CAMPEÃO!
+                {
+                    string resultadoFinal =
+                     $"{atacante.Nome.ToUpper()}é CAMPEÃO com {atacante.PontosVida} pontos de vida!";
+                    
+                    d.Narracao += resultadoFinal;//Concatena o resultado final com as demais narrações.
+                    d.Resultados.Add(resultadoFinal);//Concaten o resultado final com os demais resultados.
+
+                    break;//break vai parar o while
+                }
+
+             }//Fim do while
+
              //Código após o fechamento do while. Atualizará os pontos de vida, disputas, vitórias e derrotas de todos os personagens ao final das batalhas
              _context.Personagens.UpdateRange(personagens);
              await _context.SaveChangesAsync();
@@ -259,7 +286,39 @@ namespace RpgApi.Controllers
         }
     }
 
+   [HttpDelete("ApagarDisputas")] 
+        public async Task<IActionResult> DeleteAsync()
+        {
+            try
+            {
+              List<Disputa> disputas = await _context.Disputas.ToListAsync();
 
+              _context.Disputas.RemoveRange(disputas);
+              await _context.SaveChangesAsync(); 
+
+              return Ok("Disputas apagadas"); 
+            }
+            catch (System.Exception ex)
+            {
+              return BadRequest(ex.Message);
+            }
+        }
+    [HttpGet("Listar")]
+
+    
+        public async Task<IActionResult> ListarAsync()
+        {
+            try
+            {
+                List<Disputa> disputas = await _context.Disputas.ToListAsync(); 
+                return Ok(disputas);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
 
 
 
