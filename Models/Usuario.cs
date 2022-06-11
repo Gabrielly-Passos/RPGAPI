@@ -21,9 +21,11 @@ namespace RpgApi.Models
         public List<Personagem> Personagens { get; set; }
 
         
-    [Required]
+    //[Required]
 
     public string Perfil{ get; set; }
+
+    public string Email { get; set; }
     
     }
 }
