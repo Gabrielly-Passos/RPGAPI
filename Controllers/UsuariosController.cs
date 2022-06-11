@@ -24,7 +24,7 @@ namespace RpgApi.Controllers
     public class UsuariosController : ControllerBase
     {
         
-        private readonly DataContext _context;
+        private readonly  DataContext _context;
 
         private readonly IConfiguration _configuration;
 
@@ -42,9 +42,9 @@ namespace RpgApi.Controllers
             if(await _context.Usuarios.AnyAsync(x => x.Username.ToLower() == username.ToLower()))
             {
                 return true;
-            }    
-        return false;
-            
+            }
+            return false;
+
         }
 
         //Método para criar o token
@@ -80,8 +80,8 @@ namespace RpgApi.Controllers
             try
             {
                 if(await UsuarioExistente(user.Username))
-                    throw new System.Exception("Nome de usuário já existe");
-
+                    throw new System.Exception("Nome de usuário já existente");
+                
                 Criptografia.CriarPasswordHash(user.PasswordString, out byte[] hash, out byte[] salt);
                 user.PasswordString = string.Empty;
                 user.PasswordHash = hash;
@@ -91,7 +91,7 @@ namespace RpgApi.Controllers
 
                 return Ok(user.Id);
             }
-            catch (System.Exception ex)
+            catch(System.Exception ex)
             {
                 return BadRequest(ex.Message);
             }
